@@ -3,7 +3,7 @@
 /*
   Plugin Name: Classy API
   Description: Classy API wrapper
-  Version: 0.1.1
+  Version: 0.1.2
   Author: Neal Fennimore
   Author URI: http://neal.codes
   License: GPL V3
@@ -29,8 +29,7 @@ class Classy_API {
    */
   public static function get_campaigns($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('campaigns', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('campaigns', $opts);
     return $data['campaigns'];
   }
 
@@ -41,8 +40,7 @@ class Classy_API {
    */
   public static function get_campaign($eid=NULL){
     if (!is_int($eid)) { return self::throw_error('Need a valid event ID', __LINE__); }
-    $url = self::create_url('campaign-info', array('eid' => $eid));
-    $data = self::fetch_data($url);
+    $data = self::api_handler('campaign-info', array('eid' => $eid));
     return $data;
   }
 
@@ -57,8 +55,7 @@ class Classy_API {
    */
   public static function get_fundraisers($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('fundraisers', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('fundraisers', $opts);
     return $data['fundraisers'];
   }
 
@@ -69,8 +66,7 @@ class Classy_API {
    */
   public static function get_fundraiser($fcid=NULL){
     if (!is_int($fcid)) { return self::throw_error('Need a valid fundraising campaign ID', __LINE__); }
-    $url = self::create_url('fundraiser-info', array('fcid' => $fcid));
-    $data = self::fetch_data($url);
+    $data = self::api_handler('fundraiser-info', array('fcid' => $fcid));
     return $data;
   }
 
@@ -86,8 +82,7 @@ class Classy_API {
    */
   public static function get_donations($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('donations', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('donations', $opts);
     return $data['donations'];
   }
 
@@ -98,8 +93,7 @@ class Classy_API {
    */
   public static function get_recurring($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('recurring', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('recurring', $opts);
     return $data['profiles'];
   }
 
@@ -114,8 +108,7 @@ class Classy_API {
    */
   public static function get_teams($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('teams', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('teams', $opts);
     return $data['teams'];
   }
 
@@ -126,8 +119,7 @@ class Classy_API {
    */
   public static function get_team($ftid=NULL){
     if (!is_int($ftid)) { return self::throw_error('Need a valid fundraising team ID', __LINE__); }
-    $url = self::create_url('team-info', array('ftid' => $ftid));
-    $data = self::fetch_data($url);
+    $data = self::api_handler('team-info', array('ftid' => $ftid));
     return $data;
   }
 
@@ -142,8 +134,7 @@ class Classy_API {
    */
   public static function get_project($pid=NULL){
     if (!is_int($pid)) { return self::throw_error('Need a valid PID', __LINE__); }
-    $url = self::create_url('project-info', array('pid' => $pid));
-    $data = self::fetch_data($url);
+    $data = self::api_handler('project-info', array('pid' => $pid));
     return $data;
   }
 
@@ -158,8 +149,7 @@ class Classy_API {
    */
   public static function get_fb_activity($opts=NULL){
     $opts = func_get_args();
-    $url = self::create_url('fb-friend-activity', $opts);
-    $data = self::fetch_data($url);
+    $data = self::api_handler('fb-friend-activity', $opts);
     return $data;
   }
 
@@ -168,25 +158,21 @@ class Classy_API {
 // ================================================
 
   /**
-   * [create_params Creates params for Classy]
-   * @param  [obj] $args [params of str and val]
-   * @return [str] [Returns concatenated params as http ready string]
+   * [api_handler description]
+   * @param  [str] $queryType [Top level collection i.e. /recurring /fundraisers /teams]
+   * @param  [obj] $opts      [Options for the query: array('limit' => 2, 'eid' => 000000)]
+   * @return [arr of objs]    [Data from API call]
    */
-  private static function create_params($args=NULL){
-    $main_params = array('cid' => self::$cid,  'token' => self::$token);
-
-    if ( is_array($args) && !empty($args) ) {
-      $params = array_merge($main_params, $args);
-    } else {
-      $params = $main_params;
-    }
-    return '?' . http_build_query($params);
+  private static function api_handler($queryType, $opts){
+    $url = self::create_url($queryType, $opts);
+    $data = self::fetch_data($url);
+    return $data;
   }
 
   /**
    * [create_url Creates the Classy URL]
    * @param  string $queryType [Top level collection]
-   * @param  [arr of objs || obj] $opts [Params being passed]
+   * @param  [arr of objs || obj] $opts [Options for the query: array('limit' => 2, 'eid' => 000000)]
    * @return [str]             [URL]
    */
   private static function create_url($queryType='', $opts=NULL){
@@ -204,6 +190,22 @@ class Classy_API {
       $url = self::$api_endpoint . $queryType . self::create_params();
     }
     return $url;
+  }
+
+  /**
+   * [create_params Creates params for Classy]
+   * @param  [obj] $args [params of str and val]
+   * @return [str] [Returns concatenated params as http ready string]
+   */
+  private static function create_params($args=NULL){
+    $main_params = array('cid' => self::$cid,  'token' => self::$token);
+
+    if ( is_array($args) && !empty($args) ) {
+      $params = array_merge($main_params, $args);
+    } else {
+      $params = $main_params;
+    }
+    return '?' . http_build_query($params);
   }
 
   /**
