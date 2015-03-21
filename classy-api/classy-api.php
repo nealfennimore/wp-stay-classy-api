@@ -52,7 +52,7 @@ class Classy_API {
   public static function get_campaign_sponsors($eid=NULL){
     if (!is_int($eid)) { return self::throw_error('Need a valid event ID', __LINE__); }
     $data = self::api_handler('account-sponsor-matching', array('eid' => $eid));
-    return $data;
+    return $data['sponsors'];
   }
 
 
@@ -248,11 +248,11 @@ class Classy_API {
    * @param  [array/hash] $args [params of str and val]
    * @return [str] [Returns concatenated params as http ready string]
    */
-  private static function create_params($args=NULL){
+  private static function create_params($opts=NULL){
     $main_params = array('cid' => self::$cid,  'token' => self::$token);
 
-    if ( is_array($args) && !empty($args) ) {
-      $params = array_merge($main_params, $args);
+    if ( is_array($opts) && !empty($opts) ) {
+      $params = array_merge($main_params, $opts);
     } else {
       $params = $main_params;
     }
