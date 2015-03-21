@@ -1,7 +1,9 @@
 #StayClassy API Wordpress Plugin
-===
+Simple API wrapper for [Classy](https://www.classy.org).
 
 ## Setup 
+Add the `classy-api` directory to `wp-content/plugins`. (`wp-content/plugins/classy-api`)
+
 Add your Classy Token and Classy Charity ID to your Wordpress `wp-config.php` file.
 
 ```php
