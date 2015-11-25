@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class Classy_API {
-  private static $api_endpoint = 'https://www.stayclassy.org/api1/',
+  private static $api_endpoint = 'https://www.classy.org/api1/',
                  $cid = CLASSY_CHARITY_ID,
                  $token = CLASSY_TOKEN;
 
